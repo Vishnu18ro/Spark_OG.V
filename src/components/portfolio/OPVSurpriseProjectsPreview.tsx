@@ -77,34 +77,34 @@ export function OPVSurpriseProjectsPreview() {
         </h3>
       )}
       {project.basicBrief && (
-        <div className="space-y-1 mb-3">
-          <p className="text-xs font-semibold text-primary">Basic Brief</p>
-          <p className="text-sm text-foreground break-words">{project.basicBrief}</p>
-        </div>
+        <p className="text-sm text-gray-200 break-words mb-3 leading-relaxed">
+          <span className="font-semibold text-[#22d3ee] mr-1">Basic Brief:</span>
+          {project.basicBrief}
+        </p>
       )}
       {project.whyFailed && (
-        <div className="space-y-1 mb-3">
-          <p className="text-xs font-semibold text-primary">Why Failed/Incomplete</p>
-          <p className="text-sm text-foreground break-words">{project.whyFailed}</p>
-        </div>
+        <p className="text-sm text-gray-200 break-words mb-3 leading-relaxed">
+          <span className="font-semibold text-[#22d3ee] mr-1">Current Status:</span>
+          {project.whyFailed}
+        </p>
       )}
       {project.externalHelp && (
-        <div className="space-y-1 mb-3">
-          <p className="text-xs font-semibold text-primary">External Help Needed</p>
-          <p className="text-sm text-foreground break-words">{project.externalHelp}</p>
-        </div>
-      )}
-      {project.whatYouCanDo && (
-        <div className="space-y-1 mb-3">
-          <p className="text-xs font-semibold text-primary">Action Plan</p>
-          <p className="text-sm text-foreground break-words">{project.whatYouCanDo}</p>
-        </div>
+        <p className="text-sm text-gray-200 break-words mb-3 leading-relaxed">
+          <span className="font-semibold text-[#22d3ee] mr-1">Improvision:</span>
+          {project.externalHelp}
+        </p>
       )}
       {project.effortsMade && (
-        <div className="space-y-1 mb-3">
-          <p className="text-xs font-semibold text-primary">Efforts Made</p>
-          <p className="text-sm text-foreground break-words">{project.effortsMade}</p>
-        </div>
+        <p className="text-sm text-gray-200 break-words mb-3 leading-relaxed">
+          <span className="font-semibold text-[#22d3ee] mr-1">Efforts Made:</span>
+          {project.effortsMade}
+        </p>
+      )}
+      {project.lessonsLearnt && (
+        <p className="text-sm text-gray-200 break-words mb-3 leading-relaxed">
+          <span className="font-semibold text-[#22d3ee] mr-1">Key Learnings:</span>
+          {project.lessonsLearnt}
+        </p>
       )}
 
       {(project.tags || []).length > 0 && (

@@ -26,6 +26,7 @@ export interface SurpriseProject {
   externalHelp: string;
   whatYouCanDo: string;
   effortsMade: string;
+  lessonsLearnt?: string;
   category: 'new' | 'modified' | 'replicating';
   tags: string[];
 }
@@ -154,18 +155,22 @@ interface ProfileContextType {
   funFact: string;
   setFunFact: (funFact: string) => void;
   projects: Project[];
+  setProjects: (projects: Project[]) => void;
   addProject: (project: Omit<Project, 'id'>) => void;
   removeProject: (id: string) => void;
   updateProject: (id: string, updatedData: Omit<Project, 'id'>) => void;
   surpriseProjects: SurpriseProject[];
+  setSurpriseProjects: (projects: SurpriseProject[]) => void;
   addSurpriseProject: (project: Omit<SurpriseProject, 'id'>) => void;
   removeSurpriseProject: (id: string) => void;
   updateSurpriseProject: (id: string, updatedData: Omit<SurpriseProject, 'id'>) => void;
   certificates: Certificate[];
+  setCertificates: (certificates: Certificate[]) => void;
   addCertificate: (certificate: Omit<Certificate, 'id'>) => void;
   removeCertificate: (id: string) => void;
   updateCertificate: (id: string, updatedData: Omit<Certificate, 'id'>) => void;
   skillGroups: SkillGroup[];
+  setSkillGroups: (groups: SkillGroup[]) => void;
   addSkillGroup: (group: Omit<SkillGroup, 'id'>) => void;
   removeSkillGroup: (id: string) => void;
   updateSkillGroup: (id: string, updatedData: Omit<SkillGroup, 'id'>) => void;
@@ -173,14 +178,17 @@ interface ProfileContextType {
   removeSkillFromGroup: (groupId: string, skillId: string) => void;
   updateSkillInGroup: (groupId: string, skillId: string, updatedData: Omit<Skill, 'id'>) => void;
   codingPlatforms: CodingPlatform[];
+  setCodingPlatforms: (platforms: CodingPlatform[]) => void;
   addCodingPlatform: (platform: Omit<CodingPlatform, 'id'>) => void;
   removeCodingPlatform: (id: string) => void;
   updateCodingPlatform: (id: string, updatedData: Omit<CodingPlatform, 'id'>) => void;
   experiences: Experience[];
+  setExperiences: (experiences: Experience[]) => void;
   addExperience: (experience: Omit<Experience, 'id'>) => void;
   removeExperience: (id: string) => void;
   updateExperience: (id: string, updatedData: Omit<Experience, 'id'>) => void;
   education: Education[];
+  setEducation: (education: Education[]) => void;
   addEducation: (education: Omit<Education, 'id'>) => void;
   removeEducation: (id: string) => void;
   updateEducation: (id: string, updatedData: Omit<Education, 'id'>) => void;
@@ -526,6 +534,41 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("profileEducation", JSON.stringify(updatedEducation));
   };
 
+  const setProjects = (newProjects: Project[]) => {
+    setProjectsState(newProjects);
+    localStorage.setItem("profileProjects", JSON.stringify(newProjects));
+  };
+
+  const setSurpriseProjects = (newProjects: SurpriseProject[]) => {
+    setSurpriseProjectsState(newProjects);
+    localStorage.setItem("profileSurpriseProjects", JSON.stringify(newProjects));
+  };
+
+  const setCertificates = (newCertificates: Certificate[]) => {
+    setCertificatesState(newCertificates);
+    localStorage.setItem("profileCertificates", JSON.stringify(newCertificates));
+  };
+
+  const setSkillGroups = (newGroups: SkillGroup[]) => {
+    setSkillGroupsState(newGroups);
+    localStorage.setItem("profileSkillGroups", JSON.stringify(newGroups));
+  };
+
+  const setCodingPlatforms = (newPlatforms: CodingPlatform[]) => {
+    setCodingPlatformsState(newPlatforms);
+    localStorage.setItem("profileCodingPlatforms", JSON.stringify(newPlatforms));
+  };
+
+  const setExperiences = (newExperiences: Experience[]) => {
+    setExperiencesState(newExperiences);
+    localStorage.setItem("profileExperiences", JSON.stringify(newExperiences));
+  };
+
+  const setEducation = (newEducation: Education[]) => {
+    setEducationState(newEducation);
+    localStorage.setItem("profileEducation", JSON.stringify(newEducation));
+  };
+
   // About Me setters
   const setBio = (bio: string) => {
     setBioState(bio);
@@ -797,18 +840,22 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       setLocation,
       updateProfile,
       projects,
+      setProjects,
       addProject,
       removeProject,
       updateProject,
       surpriseProjects,
+      setSurpriseProjects,
       addSurpriseProject,
       removeSurpriseProject,
       updateSurpriseProject,
       certificates,
+      setCertificates,
       addCertificate,
       removeCertificate,
       updateCertificate,
       skillGroups,
+      setSkillGroups,
       addSkillGroup,
       removeSkillGroup,
       updateSkillGroup,
@@ -816,14 +863,17 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       removeSkillFromGroup,
       updateSkillInGroup,
       codingPlatforms,
+      setCodingPlatforms,
       addCodingPlatform,
       removeCodingPlatform,
       updateCodingPlatform,
       experiences,
+      setExperiences,
       addExperience,
       removeExperience,
       updateExperience,
       education,
+      setEducation,
       addEducation,
       removeEducation,
       updateEducation,

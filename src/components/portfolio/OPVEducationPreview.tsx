@@ -22,7 +22,7 @@ export function OPVEducationPreview() {
       )}
 
       <div className="p-4 space-y-2">
-        <Badge className="bg-gradient-to-r from-[#22d3ee]/25 to-[#c084fc]/25 text-[#c084fc] border border-[#c084fc]/40 rounded-full px-2 py-1 text-xs font-medium hover:shadow-[0_0_15px_rgba(192,132,252,0.4)] transition-all">
+        <Badge variant="outline" className="bg-gradient-to-r from-[#22d3ee]/25 to-[#c084fc]/25 text-[#c084fc] border border-[#c084fc]/40 rounded-full px-2 py-1 text-xs font-medium hover:shadow-[0_0_15px_rgba(192,132,252,0.4)] transition-all">
           {edu.tag}
         </Badge>
 

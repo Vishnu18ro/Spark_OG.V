@@ -70,18 +70,22 @@ export default function ProfileEdit() {
     location: profileLocation,
     setLocation,
     projects,
+    setProjects,
     addProject,
     removeProject,
     updateProject,
     surpriseProjects,
+    setSurpriseProjects,
     addSurpriseProject,
     removeSurpriseProject,
     updateSurpriseProject,
     certificates,
+    setCertificates,
     addCertificate,
     removeCertificate,
     updateCertificate,
     skillGroups,
+    setSkillGroups,
     addSkillGroup,
     removeSkillGroup,
     updateSkillGroup,
@@ -89,14 +93,17 @@ export default function ProfileEdit() {
     removeSkillFromGroup,
     updateSkillInGroup,
     codingPlatforms,
+    setCodingPlatforms,
     addCodingPlatform,
     removeCodingPlatform,
     updateCodingPlatform,
     experiences,
+    setExperiences,
     addExperience,
     removeExperience,
     updateExperience,
     education,
+    setEducation,
     addEducation,
     removeEducation,
     updateEducation,
@@ -146,6 +153,43 @@ export default function ProfileEdit() {
   const aboutMeFileInputRef = useRef<HTMLInputElement>(null);
   const projectImageInputRef = useRef<HTMLInputElement>(null);
 
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
+  const [draggedItemType, setDraggedItemType] = useState<string | null>(null);
+
+  const handleDragStartCards = (e: React.DragEvent, index: number, type: string) => {
+    setDraggedItemIndex(index);
+    setDraggedItemType(type);
+    setDraggedOverIndex(index);
+  };
+
+  const handleDragEnterCards = (e: React.DragEvent, index: number, type: string) => {
+    e.preventDefault();
+    if (draggedItemType !== type) return;
+    setDraggedOverIndex(index);
+  };
+
+  const handleDragEndCards = (e: React.DragEvent, type: string, items: any[], setItems: (items: any[]) => void) => {
+    e.preventDefault();
+    if (draggedItemIndex === null || draggedOverIndex === null || draggedItemType !== type) {
+      setDraggedItemIndex(null);
+      setDraggedOverIndex(null);
+      setDraggedItemType(null);
+      return;
+    }
+
+    if (draggedItemIndex !== draggedOverIndex) {
+      const newItems = [...items];
+      const draggedItem = newItems.splice(draggedItemIndex, 1)[0];
+      newItems.splice(draggedOverIndex, 0, draggedItem);
+      setItems(newItems);
+    }
+
+    setDraggedItemIndex(null);
+    setDraggedOverIndex(null);
+    setDraggedItemType(null);
+  };
+
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [newProject, setNewProject] = useState({
@@ -171,6 +215,7 @@ export default function ProfileEdit() {
     externalHelp: "",
     whatYouCanDo: "",
     effortsMade: "",
+    lessonsLearnt: "",
     category: 'new' as 'new' | 'modified' | 'replicating',
     tags: [] as string[],
   });
@@ -456,6 +501,7 @@ export default function ProfileEdit() {
       externalHelp: project.externalHelp,
       whatYouCanDo: project.whatYouCanDo,
       effortsMade: project.effortsMade,
+      lessonsLearnt: project.lessonsLearnt || "",
       category: project.category,
       tags: project.tags,
     });
@@ -851,7 +897,7 @@ export default function ProfileEdit() {
 
       {/* Main Content */}
       <main className="flex-1 ml-64 pt-24 pb-20 px-8">
-        <div className="max-w-4xl" style={{ zoom: "90%" }}>
+        <div className="w-full max-w-5xl xl:max-w-6xl mx-auto" style={{ zoom: "90%" }}>
           <h1 className="text-4xl font-bold bg-gradient-electric bg-clip-text text-transparent mb-6">
             {activeSection}
           </h1>
@@ -1103,8 +1149,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {projects.map((project) => (
-                      <Card key={project.id} className="overflow-hidden border-primary/20">
+                    {projects.map((project, index) => (
+                      <Card 
+                        key={project.id} 
+                        className={`overflow-hidden border-primary/20 cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'projects' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'projects' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'projects')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'projects')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'projects', projects, setProjects)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-0">
                           {project.image && (
                             <div className="w-full h-48 overflow-hidden">
@@ -1197,6 +1251,7 @@ export default function ProfileEdit() {
                         externalHelp: "",
                         whatYouCanDo: "",
                         effortsMade: "",
+                        lessonsLearnt: "",
                         category: 'new' as 'new' | 'modified' | 'replicating',
                         tags: [],
                       });
@@ -1273,10 +1328,10 @@ export default function ProfileEdit() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="surprise-why-failed">2️⃣ Why do you think the project failed or was left incomplete?</Label>
+                          <Label htmlFor="surprise-why-failed">2️⃣ Current Status</Label>
                           <Textarea
                             id="surprise-why-failed"
-                            placeholder="Explain the reasons..."
+                            placeholder="Current status of the project..."
                             value={newSurpriseProject.whyFailed}
                             onChange={(e) => setNewSurpriseProject(prev => ({ ...prev, whyFailed: e.target.value }))}
                             className="bg-input border-border min-h-[80px]"
@@ -1284,10 +1339,10 @@ export default function ProfileEdit() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="surprise-external-help">3️⃣ Do you think you can make it work with external help? If yes, what kind of help would you need?</Label>
+                          <Label htmlFor="surprise-external-help">3️⃣ Improvision</Label>
                           <Textarea
                             id="surprise-external-help"
-                            placeholder="Describe the help you need..."
+                            placeholder="Describe any improvisations..."
                             value={newSurpriseProject.externalHelp}
                             onChange={(e) => setNewSurpriseProject(prev => ({ ...prev, externalHelp: e.target.value }))}
                             className="bg-input border-border min-h-[80px]"
@@ -1295,23 +1350,23 @@ export default function ProfileEdit() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="surprise-what-you-can-do">4️⃣ What can you do to make it close to your desired output?</Label>
-                          <Textarea
-                            id="surprise-what-you-can-do"
-                            placeholder="Your action plan..."
-                            value={newSurpriseProject.whatYouCanDo}
-                            onChange={(e) => setNewSurpriseProject(prev => ({ ...prev, whatYouCanDo: e.target.value }))}
-                            className="bg-input border-border min-h-[80px]"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="surprise-efforts-made">5️⃣ How hard have you tried? Highlight your efforts.</Label>
+                          <Label htmlFor="surprise-efforts-made">4️⃣ Efforts Made</Label>
                           <Textarea
                             id="surprise-efforts-made"
                             placeholder="Describe your efforts..."
                             value={newSurpriseProject.effortsMade}
                             onChange={(e) => setNewSurpriseProject(prev => ({ ...prev, effortsMade: e.target.value }))}
+                            className="bg-input border-border min-h-[80px]"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="surprise-lessons-learnt">5️⃣ Key Learnings</Label>
+                          <Textarea
+                            id="surprise-lessons-learnt"
+                            placeholder="What were your main takeaways or lessons learnt?"
+                            value={newSurpriseProject.lessonsLearnt || ""}
+                            onChange={(e) => setNewSurpriseProject(prev => ({ ...prev, lessonsLearnt: e.target.value }))}
                             className="bg-input border-border min-h-[80px]"
                           />
                         </div>
@@ -1393,12 +1448,20 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {surpriseProjects.map((project) => (
-                      <Card key={project.id} className="overflow-hidden border-primary/20">
+                    {surpriseProjects.map((project, index) => (
+                      <Card 
+                        key={project.id} 
+                        className={`overflow-hidden border-primary/20 cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'surpriseProjects' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'surpriseProjects' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'surpriseProjects')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'surpriseProjects')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'surpriseProjects', surpriseProjects, setSurpriseProjects)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-0">
                           {project.image && (
                             <div className="w-full h-48 overflow-hidden relative">
-                              <img src={project.image} alt="Project" className="w-full h-full object-cover" />
+                              <img src={project.image} alt="Project" className="w-full h-full object-contain bg-muted/20" />
                               <div className="absolute top-2 left-2">
                                 <span className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${project.category === 'new' ? 'bg-red-500' :
                                   project.category === 'modified' ? 'bg-orange-500' :
@@ -1425,26 +1488,26 @@ export default function ProfileEdit() {
                             )}
                             {project.whyFailed && (
                               <div className="space-y-1">
-                                <p className="text-xs font-semibold text-primary">Why Failed/Incomplete</p>
+                                <p className="text-xs font-semibold text-primary">Current Status</p>
                                 <p className="text-sm text-foreground">{project.whyFailed}</p>
                               </div>
                             )}
                             {project.externalHelp && (
                               <div className="space-y-1">
-                                <p className="text-xs font-semibold text-primary">External Help Needed</p>
+                                <p className="text-xs font-semibold text-primary">Improvision</p>
                                 <p className="text-sm text-foreground">{project.externalHelp}</p>
-                              </div>
-                            )}
-                            {project.whatYouCanDo && (
-                              <div className="space-y-1">
-                                <p className="text-xs font-semibold text-primary">Action Plan</p>
-                                <p className="text-sm text-foreground">{project.whatYouCanDo}</p>
                               </div>
                             )}
                             {project.effortsMade && (
                               <div className="space-y-1">
                                 <p className="text-xs font-semibold text-primary">Efforts Made</p>
                                 <p className="text-sm text-foreground">{project.effortsMade}</p>
+                              </div>
+                            )}
+                            {project.lessonsLearnt && (
+                              <div className="space-y-1">
+                                <p className="text-xs font-semibold text-primary">Key Learnings</p>
+                                <p className="text-sm text-foreground">{project.lessonsLearnt}</p>
                               </div>
                             )}
 
@@ -1547,38 +1610,12 @@ export default function ProfileEdit() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label>Certificate Image</Label>
-                          <div className="flex flex-col items-center gap-4">
-                            {newCertificate.image ? (
-                              <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
-                                <img src={newCertificate.image} alt="Certificate" className="w-full h-full object-cover" />
-                                <button
-                                  onClick={() => setNewCertificate(prev => ({ ...prev, image: "" }))}
-                                  className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-  type="button"
-  onClick={() => projectImageInputRef.current?.click()}
-                                className="w-full h-48 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary transition-colors"
-                              >
-                                <Camera className="w-8 h-8 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">Click to upload image</span>
-                              </button>
-                            )}
-                            <input
-                              ref={projectImageInputRef}
-                              type="file"
-                              accept="image/*"
-                              onChange={handleProjectImageUpload}
-                              className="hidden"
-                            />
-                          </div>
-                        </div>
+                        <ImageUploadZone 
+                          label="Certificate Image" 
+                          value={newCertificate.image} 
+                          onChange={(val) => setNewCertificate(prev => ({ ...prev, image: val }))} 
+                          onRemove={() => setNewCertificate(prev => ({ ...prev, image: "" }))} 
+                        />
 
                         <div className="space-y-2">
                           <Label htmlFor="certificate-issuer">Issuer</Label>
@@ -1679,8 +1716,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {certificates.map((certificate) => (
-                      <Card key={certificate.id} className="overflow-hidden border-primary/20">
+                    {certificates.map((certificate, index) => (
+                      <Card 
+                        key={certificate.id} 
+                        className={`overflow-hidden border-primary/20 cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'certificates' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'certificates' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'certificates')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'certificates')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'certificates', certificates, setCertificates)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-0">
                           {certificate.image && (
                             <div className="w-full h-48 overflow-hidden">
@@ -1812,8 +1857,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {skillGroups.map((group) => (
-                      <Card key={group.id} className="border-primary/20">
+                    {skillGroups.map((group, index) => (
+                      <Card 
+                        key={group.id} 
+                        className={`border-primary/20 cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'skillGroups' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'skillGroups' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'skillGroups')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'skillGroups')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'skillGroups', skillGroups, setSkillGroups)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
@@ -1999,36 +2052,12 @@ export default function ProfileEdit() {
                       <div className="space-y-4 mt-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2 col-span-2">
-                            <Label>Image/Logo</Label>
-                            <div className="flex flex-col items-center gap-4">
-                              {newExperience.image ? (
-                                <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
-                                  <img src={newExperience.image} alt="Experience" className="w-full h-full object-contain bg-muted" />
-                                  <button
-                                    onClick={() => setNewExperience(prev => ({ ...prev, image: "" }))}
-                                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2"
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <button
-  type="button"
-  onClick={() => projectImageInputRef.current?.click()}
-                                  className="w-full h-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary transition-colors"
-                                >
-                                  <Camera className="w-8 h-8 text-muted-foreground" />
-                                  <span className="text-sm text-muted-foreground">Click to upload image</span>
-                                </button>
-                              )}
-                              <input
-                                ref={projectImageInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleProjectImageUpload}
-                                className="hidden"
-                              />
-                            </div>
+                            <ImageUploadZone 
+                              label="Image/Logo" 
+                              value={newExperience.image} 
+                              onChange={(val) => setNewExperience(prev => ({ ...prev, image: val }))} 
+                              onRemove={() => setNewExperience(prev => ({ ...prev, image: "" }))} 
+                            />
                           </div>
 
                           <div className="space-y-2">
@@ -2286,8 +2315,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-4">
-                    {experiences.map((experience) => (
-                      <Card key={experience.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    {experiences.map((experience, index) => (
+                      <Card 
+                        key={experience.id} 
+                        className={`overflow-hidden hover:shadow-lg transition-all cursor-move ${draggedItemIndex === index && draggedItemType === 'experiences' ? 'opacity-50 scale-[0.98]' : ''} ${draggedOverIndex === index && draggedItemType === 'experiences' && draggedItemIndex !== index ? 'border-primary border-2 scale-[1.02]' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'experiences')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'experiences')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'experiences', experiences, setExperiences)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-6">
                           <div className="flex gap-4">
                             {experience.image && (
@@ -2452,38 +2489,12 @@ export default function ProfileEdit() {
                           />
                         </div>
 
-                        <div className="space-y-2">
-                          <Label>Platform Logo/Image</Label>
-                          <div className="flex flex-col items-center gap-4">
-                            {newCodingPlatform.image ? (
-                              <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
-                                <img src={newCodingPlatform.image} alt="Platform" className="w-full h-full object-contain bg-muted" />
-                                <button
-                                  onClick={() => setNewCodingPlatform(prev => ({ ...prev, image: "" }))}
-                                  className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-  type="button"
-  onClick={() => projectImageInputRef.current?.click()}
-                                className="w-full h-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary transition-colors"
-                              >
-                                <Camera className="w-8 h-8 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">Click to upload logo/image</span>
-                              </button>
-                            )}
-                            <input
-                              ref={projectImageInputRef}
-                              type="file"
-                              accept="image/*"
-                              onChange={handleProjectImageUpload}
-                              className="hidden"
-                            />
-                          </div>
-                        </div>
+                        <ImageUploadZone 
+                          label="Platform Logo/Image" 
+                          value={newCodingPlatform.image} 
+                          onChange={(val) => setNewCodingPlatform(prev => ({ ...prev, image: val }))} 
+                          onRemove={() => setNewCodingPlatform(prev => ({ ...prev, image: "" }))} 
+                        />
 
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
@@ -2692,8 +2703,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {codingPlatforms.map((platform) => (
-                      <Card key={platform.id} className="overflow-hidden border-primary/20">
+                    {codingPlatforms.map((platform, index) => (
+                      <Card 
+                        key={platform.id} 
+                        className={`overflow-hidden border-primary/20 cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'codingPlatforms' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'codingPlatforms' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'codingPlatforms')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'codingPlatforms')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'codingPlatforms', codingPlatforms, setCodingPlatforms)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-0">
                           {platform.image && (
                             <div className="w-full h-32 overflow-hidden relative bg-muted flex items-center justify-center p-4">
@@ -2811,7 +2830,7 @@ export default function ProfileEdit() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label className="bg-gradient-to-r from-[#22d3ee] to-[#c084fc] bg-clip-text text-transparent transition-all duration-300">Profile Photo</Label>
-                      <ImageUploadZone value={aboutMeProfileImage} onChange={(val) => setAboutMeProfileImage(val)} onRemove={() => setAboutMeProfileImage("")} label="" />
+                      <ImageUploadZone value={aboutMeProfileImage} onChange={(val) => setAboutMeProfileImage(val)} onRemove={() => setAboutMeProfileImage("")} label="" variant="about-me" />
                     </div>
 
                     <div className="space-y-2">
@@ -2936,7 +2955,7 @@ export default function ProfileEdit() {
                           className="w-full bg-gradient-to-b from-[#22d3ee] to-[#c084fc] text-white font-semibold py-2 px-4 rounded-lg shadow-[0_0_15px_rgba(192,132,252,0.4)] hover:scale-[1.03] transition-all mt-2"
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
-                          Download Resume
+                          View Resume
                         </Button>
                       )}
                     </div>
@@ -3150,36 +3169,12 @@ export default function ProfileEdit() {
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Institution Photo/Logo</Label>
-                          {newEducation.image ? (
-                            <div className="relative w-full h-40 border border-border rounded-lg overflow-hidden bg-muted flex items-center justify-center p-4">
-                              <img src={newEducation.image} alt="Institution" className="max-h-full max-w-full object-contain" />
-                              <button
-                                onClick={() => setNewEducation(prev => ({ ...prev, image: "" }))}
-                                className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-  type="button"
-  onClick={() => projectImageInputRef.current?.click()}
-                              className="w-full h-40 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:border-primary transition-colors"
-                            >
-                              <Camera className="w-8 h-8 text-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Click to upload logo</span>
-                            </button>
-                          )}
-                          <input
-                            ref={projectImageInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleProjectImageUpload}
-                            className="hidden"
-                          />
-                        </div>
+                        <ImageUploadZone 
+                          label="Institution Photo/Logo" 
+                          value={newEducation.image} 
+                          onChange={(val) => setNewEducation(prev => ({ ...prev, image: val }))} 
+                          onRemove={() => setNewEducation(prev => ({ ...prev, image: "" }))} 
+                        />
 
                         <div className="space-y-2">
                           <Label htmlFor="edu-tag">Tag (e.g., CBSE, B.Tech, Diploma, AI Workshop) *</Label>
@@ -3284,8 +3279,16 @@ export default function ProfileEdit() {
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2">
-                    {education.map((edu) => (
-                      <Card key={edu.id} className="overflow-hidden border-primary/20 bg-card/50 backdrop-blur-sm">
+                    {education.map((edu, index) => (
+                      <Card 
+                        key={edu.id} 
+                        className={`overflow-hidden border-primary/20 bg-card/50 backdrop-blur-sm cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'education' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'education' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        draggable
+                        onDragStart={(e) => handleDragStartCards(e, index, 'education')}
+                        onDragEnter={(e) => handleDragEnterCards(e, index, 'education')}
+                        onDragEnd={(e) => handleDragEndCards(e, 'education', education, setEducation)}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
                         <CardContent className="p-0">
                           {edu.image && (
                             <div className="w-full h-32 overflow-hidden relative bg-muted flex items-center justify-center p-4">
@@ -3296,6 +3299,7 @@ export default function ProfileEdit() {
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1">
                                 <Badge
+                                  variant="outline"
                                   className="mb-2 bg-gradient-to-r from-orange-500/20 to-orange-600/20 text-orange-400 border-orange-500/50 shadow-[0_0_10px_rgba(249,115,22,0.3)]"
                                 >
                                   {edu.tag}
