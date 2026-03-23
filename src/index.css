@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Space theme - deep cosmic background */
+    --background: 230 35% 7%;
+    --foreground: 210 100% 98%;
+
+    /* Cards with glass effect */
+    --card: 230 30% 10%;
+    --card-foreground: 210 100% 98%;
+
+    --popover: 230 30% 12%;
+    --popover-foreground: 210 100% 98%;
+
+    /* Electric cyan primary */
+    --primary: 188 100% 50%;
+    --primary-foreground: 230 35% 7%;
+
+    /* Neon purple secondary */
+    --secondary: 270 60% 65%;
+    --secondary-foreground: 210 100% 98%;
+
+    /* Muted cosmic tones */
+    --muted: 230 25% 20%;
+    --muted-foreground: 210 40% 70%;
+
+    /* Vibrant accent */
+    --accent: 280 80% 60%;
+    --accent-foreground: 210 100% 98%;
+
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 210 100% 98%;
+
+    /* Glowing borders */
+    --border: 230 30% 20%;
+    --input: 230 30% 15%;
+    --ring: 188 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 230 30% 10%;
+    --sidebar-foreground: 210 100% 98%;
+    --sidebar-primary: 188 100% 50%;
+    --sidebar-primary-foreground: 230 35% 7%;
+    --sidebar-accent: 230 25% 20%;
+    --sidebar-accent-foreground: 210 100% 98%;
+    --sidebar-border: 230 30% 20%;
+    --sidebar-ring: 188 100% 50%;
+
+    /* Custom gradients */
+    --gradient-cosmic: linear-gradient(135deg, hsl(230, 35%, 7%) 0%, hsl(250, 40%, 15%) 50%, hsl(230, 35%, 7%) 100%);
+    --gradient-electric: linear-gradient(135deg, hsl(188, 100%, 50%) 0%, hsl(270, 60%, 65%) 100%);
+    --glow-primary: 0 0 20px hsl(188, 100%, 50% / 0.5);
+    --glow-secondary: 0 0 20px hsl(270, 60%, 65% / 0.5);
+  }
+
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
