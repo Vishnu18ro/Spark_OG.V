@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://ktppinbrnlmqbxajwhit.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cHBpbmJybmxtcWJ4YWp3aGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1Mjk1OTksImV4cCI6MjA3NzEwNTU5OX0.QwEu-ECL4ciDLZltgkiZNZ3UeKSH_afuCp2lIIEqfJ4';
+const supabaseUrl = 'https://icbputkucrvzbzhqhtca.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljYnB1dGt1Y3J2emJ6aHFodGNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMDY0MjksImV4cCI6MjA5MDg4MjQyOX0.x8dhww1Eqg8WtpuRFR2giQcMvJ4MX_hJju8UBZPkY34';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -36,8 +36,6 @@ async function testAuth() {
 
     if (loginError) {
         console.error('Login Error:', loginError.message);
-        // Let's also check if user exists in the auth.users table if we can, 
-        // but the anonymous key might not have access.
     } else {
         console.log('Login successful! Session:', loginData?.session ? 'Exists' : 'Null');
     }

@@ -1,4 +1,4 @@
-project_id = "ktppinbrnlmqbxajwhit"
+project_id = "icbputkucrvzbzhqhtca"
 
 [functions.cleanup-messages]
 verify_jwt = false

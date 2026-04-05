@@ -26,7 +26,7 @@ export function SurpriseProjectsPreview() {
     <div className="bg-card/50 backdrop-blur-sm border border-primary/30 rounded-lg p-8 shadow-glow-primary">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold bg-gradient-electric bg-clip-text text-transparent">
-          Surprise Projects
+          Experimental Projects
         </h2>
         <Button
           size="sm"
@@ -40,7 +40,7 @@ export function SurpriseProjectsPreview() {
       </div>
 
       {displayedItems.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 transition-all duration-500 ease-in-out">
+        <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3 transition-all duration-500 ease-in-out">
           {displayedItems.map((project) => (
             <div
               key={project.id}
@@ -142,7 +142,7 @@ export function SurpriseProjectsPreview() {
         </div>
       ) : (
         <p className="text-muted-foreground text-center py-8">
-          No surprise projects added yet.
+          No experimental projects added yet.
         </p>
       )}
 
@@ -167,7 +167,7 @@ export function SurpriseProjectsPreview() {
       <FullViewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="All Surprise Projects"
+        title="All Experimental Projects"
       >
         {sortedSurpriseProjects.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-5">
@@ -272,7 +272,7 @@ export function SurpriseProjectsPreview() {
           </div>
         ) : (
           <p className="text-muted-foreground text-center py-8">
-            No surprise projects added yet.
+            No experimental projects added yet.
           </p>
         )}
       </FullViewModal>

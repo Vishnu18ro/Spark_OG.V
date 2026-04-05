@@ -78,7 +78,8 @@ export interface Experience {
   title: string;
   organization: string;
   role: string;
-  type: 'Workshop' | 'Event' | 'Internship' | 'Job';
+  type: 'Workshop' | 'Event' | 'Internship' | 'Job' | 'Custom';
+  customType?: string;
   dateJoined: string;
   dateEnded: string;
   description: string;
@@ -89,7 +90,7 @@ export interface Experience {
   proofLink?: string;
   certificateImage?: string;
   rating: number;
-  timeSpent: number;
+  timeSpent: string | number;
   teamOrSolo?: string;
 }
 
@@ -799,7 +800,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     if (!isLoading && session && !isGuestMode()) {
       const timeoutId = setTimeout(() => {
         saveToSupabase();
-      }, 1000); // Debounce saves by 1 second
+      }, 2000); // Debounce saves by 2 seconds
 
       return () => clearTimeout(timeoutId);
     }

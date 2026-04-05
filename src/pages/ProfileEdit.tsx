@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { uploadImage } from "@/lib/storage";
 import { useNavigate } from "react-router-dom";
 import { SpaceBackground } from "@/components/SpaceBackground";
 import { ImageUploadZone } from "@/components/ImageUploadZone";
@@ -273,7 +274,8 @@ export default function ProfileEdit() {
     title: "",
     organization: "",
     role: "",
-    type: 'Workshop' as 'Workshop' | 'Event' | 'Internship' | 'Job',
+    type: 'Workshop' as 'Workshop' | 'Event' | 'Internship' | 'Job' | 'Custom',
+    customType: "",
     dateJoined: "",
     dateEnded: "",
     description: "",
@@ -284,7 +286,7 @@ export default function ProfileEdit() {
     proofLink: "",
     certificateImage: "",
     rating: 3,
-    timeSpent: 0,
+    timeSpent: "" as string | number,
     teamOrSolo: "",
   });
   const [experienceSkillInput, setExperienceSkillInput] = useState("");
@@ -318,49 +320,49 @@ export default function ProfileEdit() {
   const [showFullBio, setShowFullBio] = useState(false);
 
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const url = await uploadImage(file, "profile");
+      setProfileImage(url);
     }
   };
 
-  const handleAboutMeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAboutMeImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAboutMeProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const url = await uploadImage(file, "about-me");
+      setAboutMeProfileImage(url);
     }
   };
 
-  const handleProjectImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        if (activeSection === "Projects") {
-          setNewProject(prev => ({ ...prev, image: result }));
-        } else if (activeSection === "Surprise Projects") {
-          setNewSurpriseProject(prev => ({ ...prev, image: result }));
-        } else if (activeSection === "Certificates") {
-          setNewCertificate(prev => ({ ...prev, image: result }));
-        } else if (activeSection === "Experience (XP)") {
-          setNewExperience(prev => ({ ...prev, image: result }));
-        } else if (activeSection === "Coding Platform") {
-          setNewCodingPlatform(prev => ({ ...prev, image: result }));
-        } else if (activeSection === "Education") {
-          setNewEducation(prev => ({ ...prev, image: result }));
-        }
+      const sectionPathMap: Record<string, string> = {
+        "Projects": "projects",
+        "Surprise Projects": "surprise-projects",
+        "Certificates": "certificates",
+        "Experience (XP)": "experience",
+        "Coding Platform": "coding-platforms",
+        "Education": "education",
       };
-      reader.readAsDataURL(file);
+      const storagePath = sectionPathMap[activeSection] || "general";
+      const url = await uploadImage(file, storagePath);
+
+      if (activeSection === "Projects") {
+        setNewProject(prev => ({ ...prev, image: url }));
+      } else if (activeSection === "Surprise Projects") {
+        setNewSurpriseProject(prev => ({ ...prev, image: url }));
+      } else if (activeSection === "Certificates") {
+        setNewCertificate(prev => ({ ...prev, image: url }));
+      } else if (activeSection === "Experience (XP)") {
+        setNewExperience(prev => ({ ...prev, image: url }));
+      } else if (activeSection === "Coding Platform") {
+        setNewCodingPlatform(prev => ({ ...prev, image: url }));
+      } else if (activeSection === "Education") {
+        setNewEducation(prev => ({ ...prev, image: url }));
+      }
     }
   };
 
@@ -765,6 +767,7 @@ export default function ProfileEdit() {
         organization: "",
         role: "",
         type: 'Workshop',
+        customType: "",
         dateJoined: "",
         dateEnded: "",
         description: "",
@@ -775,7 +778,7 @@ export default function ProfileEdit() {
         proofLink: "",
         certificateImage: "",
         rating: 3,
-        timeSpent: 0,
+        timeSpent: "",
         teamOrSolo: "",
       });
       setEditingExperienceId(null);
@@ -790,6 +793,7 @@ export default function ProfileEdit() {
       organization: experience.organization,
       role: experience.role,
       type: experience.type,
+      customType: experience.customType || "",
       dateJoined: experience.dateJoined,
       dateEnded: experience.dateEnded,
       description: experience.description,
@@ -2019,6 +2023,7 @@ export default function ProfileEdit() {
                         organization: "",
                         role: "",
                         type: 'Workshop',
+                        customType: "",
                         dateJoined: "",
                         dateEnded: "",
                         description: "",
@@ -2029,7 +2034,7 @@ export default function ProfileEdit() {
                         proofLink: "",
                         certificateImage: "",
                         rating: 3,
-                        timeSpent: 0,
+                        timeSpent: "",
                         teamOrSolo: "",
                       });
                       setExperienceSkillInput("");
@@ -2098,14 +2103,24 @@ export default function ProfileEdit() {
                             <select
                               id="exp-type"
                               value={newExperience.type}
-                              onChange={(e) => setNewExperience(prev => ({ ...prev, type: e.target.value as any }))}
+                              onChange={(e) => setNewExperience(prev => ({ ...prev, type: e.target.value as any, customType: e.target.value === 'Custom' ? prev.customType : '' }))}
                               className="w-full h-10 rounded-md border border-border bg-input px-3"
                             >
                               <option value="Workshop">Workshop</option>
                               <option value="Event">Event</option>
                               <option value="Internship">Internship</option>
                               <option value="Job">Job</option>
+                              <option value="Custom">Custom</option>
                             </select>
+                            {newExperience.type === 'Custom' && (
+                              <Input
+                                id="exp-customType"
+                                placeholder="Enter custom type..."
+                                value={newExperience.customType}
+                                onChange={(e) => setNewExperience(prev => ({ ...prev, customType: e.target.value }))}
+                                className="bg-input border-border mt-2"
+                              />
+                            )}
                           </div>
 
                           <div className="space-y-2">
@@ -2249,13 +2264,13 @@ export default function ProfileEdit() {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="exp-timeSpent">Time Spent (hours)</Label>
+                            <Label htmlFor="exp-timeSpent">Time Spent</Label>
                             <Input
                               id="exp-timeSpent"
-                              type="number"
-                              min="0"
+                              type="text"
+                              placeholder="e.g., 2 weeks, 40 hours, 3 months"
                               value={newExperience.timeSpent}
-                              onChange={(e) => setNewExperience(prev => ({ ...prev, timeSpent: parseInt(e.target.value) || 0 }))}
+                              onChange={(e) => setNewExperience(prev => ({ ...prev, timeSpent: e.target.value }))}
                               className="bg-input border-border"
                             />
                           </div>
@@ -2342,7 +2357,7 @@ export default function ProfileEdit() {
                                   <h3 className="text-xl font-semibold text-primary">{experience.title}</h3>
                                   <p className="text-sm text-muted-foreground">{experience.organization} · {experience.role}</p>
                                 </div>
-                                <Badge variant="outline">{experience.type}</Badge>
+                                <Badge variant="outline">{experience.type === 'Custom' ? (experience.customType || 'Custom') : experience.type}</Badge>
                               </div>
 
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -2350,7 +2365,7 @@ export default function ProfileEdit() {
                                   <span>📅 {experience.dateJoined} → {experience.dateEnded}</span>
                                 )}
                                 {experience.location && <span>📍 {experience.location}</span>}
-                                {experience.timeSpent > 0 && <span>⏱️ {experience.timeSpent}h</span>}
+                                {experience.timeSpent && <span>⏱️ {experience.timeSpent}</span>}
                                 {experience.rating && (
                                   <span>⭐ {experience.rating}/5</span>
                                 )}

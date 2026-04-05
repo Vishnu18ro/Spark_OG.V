@@ -26,125 +26,156 @@ export function OPVExperiencePreview() {
   const renderExperienceCard = (exp: any) => (
     <div
       key={exp.id}
-      className="bg-muted/20 border border-primary/20 rounded-xl p-6 hover:border-primary/40 transition-all"
+      className="group relative bg-gradient-to-br from-muted/30 via-card/60 to-muted/20 border border-primary/20 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)] transition-all duration-500"
     >
-      <div className="flex gap-4">
-        {exp.image && (
-          <div
-            className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => setSelectedImage(exp.image)}
-          >
-            <img
-              src={exp.image}
-              alt={exp.title}
-              className="w-full h-full object-contain bg-muted"
-            />
+      {/* Gradient accent top bar */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#22d3ee] via-[#8b5cf6] to-[#c084fc]" />
+
+      <div className="p-6 space-y-4">
+        {/* Header: Image + Title + Badge */}
+        <div className="flex gap-4 items-start">
+          {exp.image && (
+            <div
+              className="w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden border-2 border-primary/30 cursor-pointer hover:scale-105 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300"
+              onClick={() => setSelectedImage(exp.image)}
+            >
+              <img
+                src={exp.image}
+                alt={exp.title}
+                className="w-full h-full object-contain bg-muted/50"
+              />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-[#22d3ee] to-[#c084fc] bg-clip-text text-transparent truncate">{exp.title}</h3>
+                <p className="text-sm text-muted-foreground">{exp.organization} · {exp.role}</p>
+              </div>
+              <span className="flex-shrink-0 px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-[#22d3ee]/20 to-[#c084fc]/20 text-[#c084fc] border border-[#c084fc]/30">
+                {exp.type === 'Custom' ? (exp.customType || 'Custom') : exp.type}
+              </span>
+            </div>
           </div>
+        </div>
+
+        {/* Meta info row */}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+          {exp.dateJoined && exp.dateEnded && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted/30">
+              <Calendar className="w-3.5 h-3.5 text-[#22d3ee]" />
+              {formatDate(exp.dateJoined)} → {formatDate(exp.dateEnded)}
+            </span>
+          )}
+          {exp.location && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted/30">
+              <MapPin className="w-3.5 h-3.5 text-[#22d3ee]" />
+              {exp.location}
+            </span>
+          )}
+          {exp.timeSpent && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted/30">
+              <Clock className="w-3.5 h-3.5 text-[#22d3ee]" />
+              {exp.timeSpent}
+            </span>
+          )}
+          {exp.rating && (
+            <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted/30">
+              <Star className="w-3.5 h-3.5 text-yellow-400" />
+              {exp.rating}/5
+            </span>
+          )}
+        </div>
+
+        {/* Description */}
+        {exp.description && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <p className="text-sm text-foreground/90 leading-relaxed">{exp.description}</p>
+          </>
         )}
-        <div className="flex-1 space-y-3">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-primary">{exp.title}</h3>
-              <p className="text-sm text-muted-foreground">{exp.organization} · {exp.role}</p>
+
+        {/* What You Learned */}
+        {exp.whatYouLearned && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <div className="space-y-1.5">
+              <p className="text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#22d3ee] to-[#c084fc] bg-clip-text text-transparent">💡 What You Learned</p>
+              <p className="text-sm text-foreground/80 leading-relaxed">{exp.whatYouLearned}</p>
             </div>
-            <Badge variant="outline">{exp.type}</Badge>
-          </div>
+          </>
+        )}
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-            {exp.dateJoined && exp.dateEnded && (
-              <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                {formatDate(exp.dateJoined)} → {formatDate(exp.dateEnded)}
-              </span>
-            )}
-            {exp.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
-                {exp.location}
-              </span>
-            )}
-            {exp.timeSpent > 0 && (
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                {exp.timeSpent}h
-              </span>
-            )}
-            {exp.rating && (
-              <span className="flex items-center gap-1">
-                <Star className="w-4 h-4" />
-                {exp.rating}/5
-              </span>
-            )}
-          </div>
-
-          {exp.description && (
-            <p className="text-sm text-foreground">{exp.description}</p>
-          )}
-
-          {exp.whatYouLearned && (
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-primary">What You Learned</p>
-              <p className="text-sm text-foreground">{exp.whatYouLearned}</p>
-            </div>
-          )}
-
-          {(exp.achievements || []).length > 0 && (
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-primary">Achievements</p>
-              <ul className="text-sm text-foreground list-disc list-inside space-y-1">
+        {/* Achievements */}
+        {(exp.achievements || []).length > 0 && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <div className="space-y-1.5">
+              <p className="text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#22d3ee] to-[#c084fc] bg-clip-text text-transparent">🏆 Achievements</p>
+              <ul className="text-sm text-foreground/80 space-y-1">
                 {exp.achievements.map((achievement, index) => (
-                  <li key={index}>{achievement}</li>
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-[#22d3ee] mt-1 text-xs">▸</span>
+                    <span>{achievement}</span>
+                  </li>
                 ))}
               </ul>
             </div>
-          )}
+          </>
+        )}
 
-          {(exp.skillsGained || []).length > 0 && (
-            <div className="flex flex-wrap gap-2">
+        {/* Skills */}
+        {(exp.skillsGained || []).length > 0 && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <div className="flex flex-wrap gap-1.5">
               {exp.skillsGained.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="px-2 py-1 bg-gradient-to-r from-[#22d3ee]/25 to-[#c084fc]/25 text-[#c084fc] border border-[#c084fc]/40 text-xs font-medium rounded-full hover:shadow-[0_0_15px_rgba(192,132,252,0.4)] hover:scale-105 transition-all duration-300 ease-in-out"
+                  className="px-2.5 py-1 bg-gradient-to-r from-[#22d3ee]/15 to-[#c084fc]/15 text-[#c084fc] border border-[#c084fc]/30 text-xs font-medium rounded-full hover:shadow-[0_0_15px_rgba(192,132,252,0.4)] hover:scale-105 transition-all duration-300 ease-in-out"
                 >
                   {skill}
                 </span>
               ))}
             </div>
-          )}
+          </>
+        )}
 
-          {exp.teamOrSolo && (
-            <p className="text-sm text-muted-foreground">👥 {exp.teamOrSolo}</p>
-          )}
+        {/* Team/Solo */}
+        {exp.teamOrSolo && (
+          <p className="text-xs text-muted-foreground">👥 {exp.teamOrSolo}</p>
+        )}
 
-          <div className="flex items-center gap-3 pt-2">
-            {exp.proofLink && (
-              <a
-                href={exp.proofLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-primary hover:text-[#22d3ee] hover:shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all duration-300 group"
-              >
-                <ExternalLink className="w-4 h-4 group-hover:animate-pulse" />
-                <span className="relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-[#22d3ee] after:origin-bottom-right after:transition-transform after:duration-300 group-hover:after:scale-x-100 group-hover:after:origin-bottom-left">
+        {/* Links */}
+        {(exp.proofLink || exp.certificateImage) && (
+          <>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+            <div className="flex items-center gap-4">
+              {exp.proofLink && (
+                <a
+                  href={exp.proofLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[#22d3ee]/10 text-[#22d3ee] border border-[#22d3ee]/20 hover:bg-[#22d3ee]/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
                   View Proof
-                </span>
-              </a>
-            )}
-            {exp.certificateImage && (
-              <a
-                href={exp.certificateImage}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-primary hover:text-[#22d3ee] hover:shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all duration-300 group"
-              >
-                <Award className="w-4 h-4 group-hover:animate-pulse" />
-                <span className="relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-[#22d3ee] after:origin-bottom-right after:transition-transform after:duration-300 group-hover:after:scale-x-100 group-hover:after:origin-bottom-left">
+                </a>
+              )}
+              {exp.certificateImage && (
+                <a
+                  href={exp.certificateImage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[#c084fc]/10 text-[#c084fc] border border-[#c084fc]/20 hover:bg-[#c084fc]/20 hover:shadow-[0_0_15px_rgba(192,132,252,0.3)] transition-all duration-300"
+                >
+                  <Award className="w-3.5 h-3.5" />
                   Certificate
-                </span>
-              </a>
-            )}
-          </div>
-        </div>
+                </a>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -167,7 +198,7 @@ export function OPVExperiencePreview() {
       </div>
 
       {displayedItems.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 transition-all duration-500 ease-in-out">
+        <div className="grid gap-4 md:grid-cols-2 transition-all duration-500 ease-in-out">
           {displayedItems.map(renderExperienceCard)}
         </div>
       ) : (

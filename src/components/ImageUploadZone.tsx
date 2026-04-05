@@ -1,6 +1,7 @@
-import { Camera, X } from "lucide-react";
+import { Camera, X, Loader2 } from "lucide-react";
 import { useRef, useState, DragEvent, ClipboardEvent } from "react";
 import { Label } from "./ui/label";
+import { uploadImage } from "@/lib/storage";
 
 interface ImageUploadZoneProps {
   label: string;
@@ -8,19 +9,25 @@ interface ImageUploadZoneProps {
   onChange: (value: string) => void;
   onRemove: () => void;
   variant?: 'default' | 'about-me';
+  storagePath?: string;
 }
 
-export function ImageUploadZone({ label, value, onChange, onRemove, variant = 'default' }: ImageUploadZoneProps) {
+export function ImageUploadZone({ label, value, onChange, onRemove, variant = 'default', storagePath = 'general' }: ImageUploadZoneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const processFile = (file?: File) => {
+  const processFile = async (file?: File) => {
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onChange(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setIsUploading(true);
+      try {
+        const url = await uploadImage(file, storagePath);
+        onChange(url);
+      } catch (err) {
+        console.error("Upload failed:", err);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -115,6 +122,11 @@ export function ImageUploadZone({ label, value, onChange, onRemove, variant = 'd
             >
               <X className="w-4 h-4" />
             </button>
+          </div>
+        ) : isUploading ? (
+          <div className={emptyClasses.replace('hover:', '')}>
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <span className="text-sm text-muted-foreground">Uploading...</span>
           </div>
         ) : (
           <button

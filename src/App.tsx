@@ -20,7 +20,16 @@ const Explore = lazy(() => import("./pages/Explore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ReadMe = lazy(() => import("./pages/ReadMe"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,      // 2 min — data considered fresh, no refetch
+      gcTime: 10 * 60 * 1000,         // 10 min — keep in memory for instant navigation
+      refetchOnWindowFocus: false,     // don't refetch on alt-tab
+      retry: 1,                        // retry once on failure
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
