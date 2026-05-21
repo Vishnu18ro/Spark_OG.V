@@ -3293,11 +3293,11 @@ export default function ProfileEdit() {
                     <p className="text-sm text-muted-foreground">Click the Add Education button to get started</p>
                   </div>
                 ) : (
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
                     {education.map((edu, index) => (
                       <Card 
                         key={edu.id} 
-                        className={`overflow-hidden border-primary/20 bg-card/50 backdrop-blur-sm cursor-move transition-transform ${draggedItemIndex === index && draggedItemType === 'education' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'education' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
+                        className={`overflow-hidden border-[#c084fc]/20 bg-[#141414] hover:border-[#c084fc]/40 transition-all cursor-move ${draggedItemIndex === index && draggedItemType === 'education' ? 'opacity-50 scale-95' : ''} ${draggedOverIndex === index && draggedItemType === 'education' && draggedItemIndex !== index ? 'border-primary border-2 scale-105' : ''}`}
                         draggable
                         onDragStart={(e) => handleDragStartCards(e, index, 'education')}
                         onDragEnter={(e) => handleDragEnterCards(e, index, 'education')}
@@ -3307,39 +3307,40 @@ export default function ProfileEdit() {
                         <CardContent className="p-0">
                           {edu.image && (
                             <div className="w-full h-32 overflow-hidden relative bg-muted flex items-center justify-center p-4">
-                              <img src={edu.image} alt="Institution" className="max-h-full max-w-full object-contain" />
+                              <img src={edu.image} alt={edu.instituteName} className="max-h-full max-w-full object-contain" />
                             </div>
                           )}
-                          <div className="p-4 space-y-3">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1">
-                                <Badge
-                                  variant="outline"
-                                  className="mb-2 bg-gradient-to-r from-orange-500/20 to-orange-600/20 text-orange-400 border-orange-500/50 shadow-[0_0_10px_rgba(249,115,22,0.3)]"
-                                >
-                                  {edu.tag}
-                                </Badge>
-                                <h3 className="text-lg font-semibold text-foreground">{edu.instituteName}</h3>
-                                <p className="text-sm text-primary font-medium">{edu.degreeOrCourse}</p>
-                              </div>
-                            </div>
+                          <div className="p-4 space-y-2">
+                            <Badge variant="outline" className="bg-gradient-to-r from-[#22d3ee]/25 to-[#c084fc]/25 text-[#c084fc] border border-[#c084fc]/40 rounded-full px-2 py-1 text-xs font-medium hover:shadow-[0_0_15px_rgba(192,132,252,0.4)] transition-all">
+                              {edu.tag}
+                            </Badge>
 
-                            <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                              <div>
-                                <span className="font-semibold">Year:</span> {edu.year}
-                              </div>
-                              <div>
-                                <span className="font-semibold">Location:</span> {edu.location}
+                            <h3 className="text-[#c084fc] text-lg font-semibold mt-2">
+                              {edu.instituteName}
+                            </h3>
+
+                            <p className="text-sm text-gray-300 font-medium">
+                              {edu.degreeOrCourse}
+                            </p>
+
+                            <div className="flex items-center justify-between text-xs text-gray-400 pt-1">
+                              <span className="font-medium">{edu.year}</span>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3" />
+                                <span>{edu.location}</span>
                               </div>
                             </div>
 
                             {edu.grade && (
-                              <div className="text-xs text-muted-foreground">
-                                <span className="font-semibold">Grade:</span> {edu.grade}
+                              <div className="text-xs">
+                                <span className="text-[#22d3ee] font-medium">Grade: </span>
+                                <span className="text-gray-300">{edu.grade}</span>
                               </div>
                             )}
 
-                            <p className="text-sm text-foreground">{edu.description}</p>
+                            <p className="text-gray-300 text-sm leading-relaxed mt-2">
+                              {edu.description}
+                            </p>
 
                             <div className="flex items-center gap-3 pt-2 border-t border-border">
                               <button
